@@ -12,6 +12,17 @@ func reverse(str string) string {
 	return result
 }
 
+//反转字符串 可中文
+func reverses(str string) string {
+	var result string
+	t := []rune(str)
+	length := len(t)
+	for i, _ := range t {
+		result = result + string(t[length-i-1])
+	}
+	return result
+}
+
 func main() {
 	str1 := "hello"
 	str2 := "world"
