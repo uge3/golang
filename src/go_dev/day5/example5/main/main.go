@@ -23,6 +23,7 @@ type Train struct {
 }
 
 //结构体内部有多个结构体,可能造成冲突,赋值时不能省略中间的结构体
+//Train2 相当于继承了Cat Cat2
 type Train2 struct {
 	Cat
 	Cat2
