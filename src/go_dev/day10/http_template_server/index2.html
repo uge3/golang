@@ -1,0 +1,13 @@
+<html>
+    <head>
+        <title>{{.Title}}</title>
+    </head>
+    <body>
+        {{if gt .Age 18}}
+        <p>hello,old name,{{.Name}}</p>
+        {{else}}
+        <p>网站：{{.Name}}</p>
+        {{end}}
+        <p>{{.}}</p>
+    </body>
+</html>

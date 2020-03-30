@@ -1,0 +1,23 @@
+package main
+
+import "testing"
+
+func TestSave(t *testing.T) {
+	stu := &student{
+		Name: "stu01",
+		Sex:  "man",
+		Age:  10,
+	}
+	err := stu.Save()
+	if err != nil {
+		t.Fatalf("save studnet error%v", err)
+	}
+}
+
+func TestLoad(t *testing.T) {
+	stu := &student{}
+	err := stu.Load()
+	if err != nil {
+		t.Fatalf("load student failed,error%v", err)
+	}
+}

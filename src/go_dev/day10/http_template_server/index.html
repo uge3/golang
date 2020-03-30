@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>测试网站</title>
+    </head>
+    <body>
+       <!-- 模板 循环 range  -->
+        <table border="1" >
+        {{range .}}
+            <tr>
+                <td>{{.Name}}</td> <td>{{.Age}}</td><td>{{.Title}}</td>
+            </tr>
+        {{end}}
+        </table>
+        
+        <p>{{.}}</p>
+    </body>
+</html>
