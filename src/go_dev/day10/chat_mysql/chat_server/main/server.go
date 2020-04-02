@@ -6,6 +6,7 @@ import (
 )
 
 func runServer(addr string) (err error) {
+	fmt.Println("server start...")
 	l, err := net.Listen("tcp", addr) //监听端口
 	if err != nil {
 		fmt.Println("listen failed,", err)

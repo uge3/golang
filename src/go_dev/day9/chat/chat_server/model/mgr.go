@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"go_dev/day10/chat_mysql/common"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -61,7 +62,7 @@ func (p *UserMgr) Login(id int, passwd string) (user *User, err error) {
 }
 
 //用户注册
-func (p *UserMgr) Register(user *User) (err error) {
+func (p *UserMgr) Register(user *common.User) (err error) {
 	conn := p.pool.Get()
 	defer conn.Close()
 	if user == nil {

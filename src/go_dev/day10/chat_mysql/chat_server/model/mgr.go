@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"go_dev/day10/chat_mysql/common"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -26,7 +27,7 @@ func NewUserMgr(pool *redis.Pool) (mgr *UserMgr) {
 }
 
 //用户验证
-func (p *UserMgr) getUser(conn redis.Conn, id int) (user *User, err error) {
+func (p *UserMgr) getUser(conn redis.Conn, id int) (user *common.User, err error) {
 	result, err := redis.String(conn.Do("HGet", UserTable, fmt.Sprintf("%d", id)))
 	if err != nil {
 		if err == redis.ErrNil {
@@ -34,7 +35,7 @@ func (p *UserMgr) getUser(conn redis.Conn, id int) (user *User, err error) {
 		}
 		return
 	}
-	user = &User{}
+	user = &common.User{}
 	err = json.Unmarshal([]byte(result), user)
 	if err != nil {
 		return
@@ -43,7 +44,7 @@ func (p *UserMgr) getUser(conn redis.Conn, id int) (user *User, err error) {
 }
 
 //登录
-func (p *UserMgr) Login(id int, passwd string) (user *User, err error) {
+func (p *UserMgr) Login(id int, passwd string) (user *common.User, err error) {
 	conn := p.pool.Get()
 	defer conn.Close()
 	user, err = p.getUser(conn, id)
@@ -55,13 +56,13 @@ func (p *UserMgr) Login(id int, passwd string) (user *User, err error) {
 		err = ErrInvalidPasswd
 		return
 	}
-	user.Status = UserStatusOnline
+	user.Status = common.UserStatusOnline
 	user.LastLogin = fmt.Sprintf("%v", time.Now()) //上线时间
 	return
 }
 
 //用户注册
-func (p *UserMgr) Register(user *User) (err error) {
+func (p *UserMgr) Register(user *common.User) (err error) {
 	conn := p.pool.Get()
 	defer conn.Close()
 	if user == nil {

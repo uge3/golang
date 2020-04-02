@@ -32,3 +32,13 @@ func (p *ClientMgr) GetClient(userId int) (client *Client, err error) {
 	}
 	return
 }
+
+//返回在线人员
+func (p *ClientMgr) GetAllUsers() map[int]*Client {
+	return p.onlineUsers
+}
+
+//人员下线
+func (p *ClientMgr) DelClient(userId int) {
+	delete(p.onlineUsers, userId)
+}

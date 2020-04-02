@@ -1,6 +1,6 @@
 package main
 
-import "go_dev/day9/chat/chat_server/model"
+import "go_dev/day10/chat_mysql/chat_server/model"
 
 var (
 	mgr *model.UserMgr
