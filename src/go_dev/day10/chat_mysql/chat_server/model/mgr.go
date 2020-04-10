@@ -6,7 +6,8 @@ import (
 	"go_dev/day10/chat_mysql/common"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
 var (
@@ -15,39 +16,40 @@ var (
 
 //用户管理
 type UserMgr struct {
-	pool *redis.Pool
+	db *sqlx.DB
 }
 
-//用户 redis 连接池
-func NewUserMgr(pool *redis.Pool) (mgr *UserMgr) {
+//用户 mysql 连接
+func NewUserMgr(db *sqlx.DB) (mgr *UserMgr) {
 	mgr = &UserMgr{
-		pool: pool,
+		db: db,
 	}
 	return
 }
 
 //用户验证
-func (p *UserMgr) getUser(conn redis.Conn, id int) (user *common.User, err error) {
-	result, err := redis.String(conn.Do("HGet", UserTable, fmt.Sprintf("%d", id)))
-	if err != nil {
-		if err == redis.ErrNil {
-			err = ErrUserNotExist
-		}
-		return
-	}
+func (p *UserMgr) getUser(id int) (user *common.User, err error) {
+	fmt.Println("用户验证中...................")
+	var users []common.Users
 	user = &common.User{}
-	err = json.Unmarshal([]byte(result), user)
+	fmt.Println(users)
+	err = p.db.Select(&users, "select user_id, passwd from persons where user_id=?", id)
+	fmt.Println("数据提取完成 =", id, users[0].UserId)
 	if err != nil {
+		//	fmt.Println("===", users)
+		fmt.Println("exec failen用户验证出错:", err)
 		return
 	}
+	fmt.Println("user内容：", user)
+	fmt.Println("select succ:", user)
+	user.UserId = users[0].UserId
+	user.Passwd = users[0].Passwd
 	return
 }
 
 //登录
 func (p *UserMgr) Login(id int, passwd string) (user *common.User, err error) {
-	conn := p.pool.Get()
-	defer conn.Close()
-	user, err = p.getUser(conn, id)
+	user, err = p.getUser(id)
 	if err != nil {
 		return
 	}
@@ -63,26 +65,35 @@ func (p *UserMgr) Login(id int, passwd string) (user *common.User, err error) {
 
 //用户注册
 func (p *UserMgr) Register(user *common.User) (err error) {
-	conn := p.pool.Get()
-	defer conn.Close()
+	// conn := p.db.Select()
+	// defer conn.Close()
+
+	fmt.Println("[]", user.UserId)
 	if user == nil {
 		fmt.Println("invalild,user")
 		err = ErrInvalidParams
 		return
 	}
-	_, err = p.getUser(conn, user.UserId) //如果用户存在
+	fmt.Println("用户注册中。。。")
+	_, err = p.getUser(int(user.UserId)) //如果用户存在
 	if err == nil {
 		err = ErrUserExist //返回
 		return
 	}
+	fmt.Println("用户检测后。。。")
 	if err != ErrUserNotExist { //如果错非用户 存在，说明有其它问题
 		return
 	}
+	fmt.Println("+++++**************++++++")
 	data, err := json.Marshal(user) //注册成功 ，存起来
+	fmt.Println("+++++++++++++++++", string(data))
+	fmt.Println("_______________", user)
+	fmt.Println(user.UserId, user.Passwd)
+
 	if err != nil {
 		return
 	}
-	_, err = conn.Do("HSet", UserTable, fmt.Sprintf("%d", user.UserId), string(data))
+	_, err = p.db.Exec("insert into persons(user_id,passwd,nick,sex,header,last_login,status)values(?,?,?,?,?,?,?)", user.UserId, user.Passwd, user.Nick, user.Sex, user.Header, user.LastLogin, user.Status)
 	if err != nil {
 		return
 	}

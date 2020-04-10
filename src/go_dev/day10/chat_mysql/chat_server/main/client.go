@@ -141,7 +141,7 @@ func (p *Client) processUserSendMessage(msg proto.Message) (err error) {
 	}
 	users := clientMgr.GetAllUsers() //获取所在线用户
 	for id, client := range users {
-		if id == userReq.UserId {
+		if id == userReq.UserId { //自己就不转发
 			continue
 		}
 		client.SendMessageToUser(userReq.Data, userReq.UserId) //发送给对方

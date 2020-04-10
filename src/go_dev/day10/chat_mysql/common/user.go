@@ -15,3 +15,13 @@ type User struct {
 	LastLogin string `json:"last_login"`
 	Status    int    `json:"status"`
 }
+
+type Users struct {
+	UserId    int    `db:"user_id"`
+	Passwd    string `db:"passwd"`
+	Nick      string `db:"nick"`
+	Sex       string `db:"sex"`
+	Header    string `db:"header"`
+	LastLogin string `db:"last_login"`
+	Status    int    `db:"status"`
+}
